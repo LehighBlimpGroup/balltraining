@@ -9,6 +9,7 @@ import matplotlib.transforms as transforms
 def compute_gaussian2d(image_path):
     # Read the image
     image = cv2.imread(image_path)
+
     if image is None:
         print("Error: Image could not be read.")
         return
@@ -19,14 +20,13 @@ def compute_gaussian2d(image_path):
     # Split the LAB image into its channels
     l_channel, a_channel, b_channel = cv2.split(lab_image)
 
-    a_channel = a_channel / 256
-    b_channel = b_channel / 256
 
     # Flatten the channels to 1D arrays for covariance calculation
-    a_flat = a_channel.flatten()
-    b_flat = b_channel.flatten()
+    a_flat = np.array(a_channel.flatten(), dtype=np.float32)
+    b_flat = np.array(b_channel.flatten(), dtype=np.float32)
 
-
+    a_flat= 100*(a_flat-128)/256
+    b_flat= 100*(b_flat-128)/256
 
     # Compute covariance matrix
     a_mean = np.mean(a_flat)
@@ -115,8 +115,8 @@ def plot_stats(stats):
 
 
     ax.grid()
-    ax.set_xlim(-1, 1)
-    ax.set_ylim(-1, 1)
+    # ax.set_xlim(-100, 100)
+    # ax.set_ylim(-100, 100)
     plt.tight_layout()
     plt.show()
 
@@ -161,7 +161,7 @@ def extract_all(folder_path):
         files = os.listdir(folder_path)
         # print("Files in directory:", files)
 
-        for file in files:
+        for file in files[:]:
             stats = compute_gaussian2d(folder_path + "/" + file)
 
             all_hist.append(stats)
@@ -172,12 +172,13 @@ def extract_all(folder_path):
     return all_hist
 
 # Specify the path to your folder
-folder_path = "green"
+folder_path = "purple"
+# folder_path = "images/lab-500pm-646569/"
 PLOT_DATA = False
 PLOT_COVARIANCE = True
-PLOT_VARIANCE = True
+PLOT_VARIANCE = False
 stats = extract_all(folder_path)
 plot_stats(stats)
-plot_summary(stats)
+# plot_summary(stats)
 
 
