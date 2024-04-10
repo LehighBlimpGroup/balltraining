@@ -67,30 +67,48 @@ def extract_histograms(folder_path, histRange, numbins):
 
 
 def plot_histograms(histograms, histRange, numbins):
-    colors = ("black", "green", "blue")
-    channel_names = ['L', 'A', 'B']
+
+
 
 
     # Plot histograms for each channel
     plt.figure(figsize=(10, 5))
     for lab_hist in histograms:
-        for i, (hist,color, name) in enumerate(zip(lab_hist, colors, channel_names)):
-            # Plot histogram
-            plt.subplot(1, 3, i + 1)
-            plt.plot([-128 + histRange[i][0] + (histRange[i][1] - histRange[i][0]) * j / numbins
-                      for j in range(numbins)], hist, '-.', color=color)
-            # plt.bar(range(numbins), hist, width=1.0, color='gray')
-            plt.title( name+' channel Histogram')
-            plt.xlabel('Intensity Value')
-            plt.ylabel('Frequency')
+        plot_lab_hist(histRange, lab_hist, numbins,  line='.-')
+
+
+    # Combine histograms
+    total_hist = np.zeros((3, numbins,1))
+    for hist in histograms:
+        total_hist += hist
+
+    # Normalize
+    for i in range(3):
+        total_hist[i] /= np.sum(total_hist[i])
+
+
+    # plot_lab_hist(histRange, total_hist, numbins, line='-o')
+
 
 
     plt.tight_layout()
     plt.show()
 
 
+def plot_lab_hist(histRange, lab_hist, numbins, colors = ("black", "green", "blue"), channel_names = ['L', 'A', 'B'],
+                  line='-.'):
+    for i, (hist, color, name) in enumerate(zip(lab_hist, colors, channel_names)):
+        # Plot histogram
+        plt.subplot(1, 3, i + 1)
+        plt.plot([ histRange[i][0] + (histRange[i][1] - histRange[i][0]) * j / numbins
+                  for j in range(numbins)], hist, line, color=color)
+        # plt.bar(range(numbins), hist, width=1.0, color='gray')
+        plt.title(name + ' channel Histogram')
+        plt.xlabel('Intensity Value')
+        plt.ylabel('Frequency')
 
-histRange = [[0, 256], [100, 155], [100, 155]]
+
+histRange = [[0, 256], [120, 155], [100, 155]]
 NUM_BINS = 10
 # Specify the path to your folder
 folder_path = "purple"
