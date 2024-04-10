@@ -90,8 +90,8 @@ def plot_histograms(histograms, histRange, numbins):
 
 
 
-histRange = [[0, 256], [100, 155], [100, 155]]
-NUM_BINS = 10
+histRange = [[0, 255], [100, 165], [80, 155]]
+NUM_BINS = 15
 # Specify the path to your folder
 folder_path = "purple"
 histograms = extract_histograms(folder_path, histRange, NUM_BINS)
