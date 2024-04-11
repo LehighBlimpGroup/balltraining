@@ -94,6 +94,26 @@ def confidence_ellipse(x, y, ax, n_std=2.0, facecolor='red', **kwargs):
     ellipse.set_transform(transf + ax.transData)
     return ax.add_patch(ellipse)
 
+
+def combine_gaussians(means, covariances, weights):
+    result = 0
+    for i in range(len(means)):
+        mu = means[i]  # mean vector
+        Sigma = covariances[i]  # covariance matrix
+        weight = weights[i]  # weight of the Gaussian
+
+        # Compute the exponent term
+        exponent = -0.5 * np.dot(np.dot(mu.T, np.linalg.inv(Sigma)), mu)
+
+        # Compute the Gaussian PDF
+        pdf = (1 / (2 * np.pi * np.sqrt(np.linalg.det(Sigma)))) * np.exp(exponent)
+
+        # Accumulate the PDF with the corresponding weight
+        result += weight * pdf
+
+    return result
+
+
 def plot_stats(stats):
     # Create figure and axis
     fig, ax = plt.subplots()
@@ -113,6 +133,8 @@ def plot_stats(stats):
                               edgecolor='blue', facecolor='none')
             ax.add_patch(ellipse)
 
+
+    # means =
 
     ax.grid()
     # ax.set_xlim(-100, 100)
