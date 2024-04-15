@@ -10,11 +10,12 @@ PLOT_VARIANCE = False
 ALL_MEANS = True
 
 if __name__ == "__main__":
-    colors = ["purple", "green"]
+    colors = ["purple", "green_w_filter"]
     # Create figure and axis
     fig, ax = plt.subplots()
 
     for c in colors:
+        print(c)
         stats = extract_all(c)
         plot_stats(stats, ax, plot_cov=False, plot_summary=True)
 

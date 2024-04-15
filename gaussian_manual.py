@@ -79,7 +79,7 @@ def confidence_ellipse(x, y, ax, n_std=2.0, plot_axes=False, **kwargs):
         max_dist = n_std * lambda_[1]
         ax.plot([p1[0], p2[0]], [p1[1], p2[1]], '--')
 
-        print("Reference line: ", np.array((p1, p2)).tolist(), "Distance=", max_dist)
+        print("Reference line: ", np.array((p1, p2), dtype=np.int32).tolist(), "Distance=", max_dist)
         # Add the circle to the axes
         circle = Circle(p1,  max_dist, color='blue', fill=False)  # Center at (0.5, 0.5), radius 0.1
         ax.add_patch(circle)
@@ -212,7 +212,7 @@ folder_path = "purple"
 
 if __name__ == "__main__":
 
-    green_mean_ab = [(-27, 13),(-23, 14), (-25,9), (-31, 10), (-23,11), (-30,8), (-29,27),(-19,22),(-30,16),(-32,34),(-21,26),(-18,27),(-27,17),(-29,30),(-23,20),(-24,29),(-24,23),(-23,30),(-16,28),(-22,16),(-23,29),(-33,18),(-26,4),(-28,21),(-41,27)]
+    green_mean_ab = [(-27, 2),(-31, 18), (-35, 21), (-24, 18), (-18,9),(-32,9),(-27, 13),(-23, 14), (-25,9), (-31, 10), (-23,11), (-30,8), (-29,27),(-19,22),(-30,16),(-32,34),(-21,26),(-18,27),(-27,17),(-29,30),(-23,20),(-24,29),(-24,23),(-23,30),(-16,28),(-22,16),(-23,29),(-33,18),(-26,4),(-28,21),(-41,27)]
 
     # Create figure and axis
     fig, ax = plt.subplots()
