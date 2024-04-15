@@ -56,7 +56,7 @@ def confidence_ellipse(x, y, ax, n_std=2.0, plot_axes=False, **kwargs):
     ellipse = Ellipse(xy=(np.mean(x), np.mean(y)),
                       width=lambda_[0] * n_std * 2, height=lambda_[1] * n_std * 2,
                       angle=np.degrees(np.arctan2(*v[:, 0][::-1])),
-                      edgecolor='red', facecolor='none', **kwargs)
+                       facecolor='none', **kwargs)
 
     if plot_axes:
         # Add major and minor axis lines
@@ -108,10 +108,10 @@ def combine_gaussians(means, covariances, weights):
     return result
 
 
-def plot_stats(points, ax, plot_summary=False):
+def plot_stats(points, ax, plot_summary=False,edgecolor='k'):
 
     for a_mean, b_mean in points:
-        ax.plot(a_mean, b_mean, 'o')
+        ax.plot(a_mean, b_mean, '.', color=edgecolor)
 
 
 
@@ -122,7 +122,7 @@ def plot_stats(points, ax, plot_summary=False):
         b_means = [b_mean for a_mean, b_mean in points]
 
 
-        confidence_ellipse(np.array(a_means), np.array(b_means), ax, n_std=2, plot_axes=True)
+        confidence_ellipse(np.array(a_means), np.array(b_means), ax, n_std=2, plot_axes=True, edgecolor=edgecolor)
 
 
         # # Point
@@ -205,14 +205,12 @@ def extract_all(folder_path, extend_data=False):
 
     return all_hist
 
-# Specify the path to your folder
-folder_path = "purple"
-# folder_path = "images/lab-500pm-646569/"
 
 
 if __name__ == "__main__":
 
     green_mean_ab = [(-27, 2),(-31, 18), (-35, 21), (-24, 18), (-18,9),(-32,9),(-27, 13),(-23, 14), (-25,9), (-31, 10), (-23,11), (-30,8), (-29,27),(-19,22),(-30,16),(-32,34),(-21,26),(-18,27),(-27,17),(-29,30),(-23,20),(-24,29),(-24,23),(-23,30),(-16,28),(-22,16),(-23,29),(-33,18),(-26,4),(-28,21),(-41,27)]
+    green_mean_ab = [(1, -14), (-5, -8), (17, -22),(2, -19), (-5, -12), (13, -16),(25, -43), (22, -39), (10, -15)]
     blue_mean_ab = [(10, -42), (9, -40), (8, -38), (7, -40), (8, -42), (6, -43), (5, -26), (8, -31), (6, -23), (10, -24), (12, -34), (0, -17), (3, -10), (8, -25), (5, -19), (-1, -2), (1, -5), (0, -4), ]
 
     points = blue_mean_ab
@@ -223,6 +221,6 @@ if __name__ == "__main__":
     ax.grid()
     plt.tight_layout()
     plt.show()
-    # plot_summary(stats)
+
 
 
