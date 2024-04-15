@@ -79,7 +79,7 @@ def confidence_ellipse(x, y, ax, n_std=2.0, plot_axes=False, **kwargs):
         max_dist = n_std * lambda_[1]
         ax.plot([p1[0], p2[0]], [p1[1], p2[1]], '--')
 
-        print("Points for detector: ", p1, p2, "Distance=", max_dist)
+        print("Reference line: ", np.array((p1, p2)).tolist(), "Distance=", max_dist)
         # Add the circle to the axes
         circle = Circle(p1,  max_dist, color='blue', fill=False)  # Center at (0.5, 0.5), radius 0.1
         ax.add_patch(circle)
@@ -108,42 +108,31 @@ def combine_gaussians(means, covariances, weights):
     return result
 
 
-def plot_stats(stats, ax, plot_data=False, plot_cov=False, plot_var=False, plot_summary=False):
+def plot_stats(points, ax, plot_summary=False):
 
-
-    for a_mean, b_mean, covariance_matrix, a_std, b_std, a_flat, b_flat in stats:
-        if plot_data:
-            ax.plot(a_flat, b_flat, '.')
-
+    for a_mean, b_mean in points:
         ax.plot(a_mean, b_mean, 'o')
 
-        if plot_cov:
-            confidence_ellipse(a_flat, b_flat, ax, n_std=2)
 
-        if plot_var:
-            # Non rotated ellipse
-            ellipse = Ellipse((a_mean, b_mean), width=2*a_std * 2, height=2*b_std * 2,
-                              edgecolor='blue', facecolor='none')
-            ax.add_patch(ellipse)
 
 
     # covariance of all means
     if plot_summary:
-        a_means = [a_mean for a_mean, b_mean, covariance_matrix, a_std, b_std, a_flat, b_flat in stats]
-        b_means = [b_mean for a_mean, b_mean, covariance_matrix, a_std, b_std, a_flat, b_flat in stats]
+        a_means = [a_mean for a_mean, b_mean in points]
+        b_means = [b_mean for a_mean, b_mean in points]
 
 
         confidence_ellipse(np.array(a_means), np.array(b_means), ax, n_std=2, plot_axes=True)
 
 
-        # Point
-        x = np.array([.5, -4])
-        mu = np.array([np.average(a_means), np.average(b_means)])
-        Sigma = np.cov(a_means, b_means)
-
-        # Mahalanobis Distance
-        distance, mu = mahalanobis_distance(mu, Sigma, x)
-        print("Mahalanobis Distance:", distance, " point=", x, "from mu=", mu)
+        # # Point
+        # x = np.array([.5, -4])
+        # mu = np.array([np.average(a_means), np.average(b_means)])
+        # Sigma = np.cov(a_means, b_means)
+        #
+        # # Mahalanobis Distance
+        # distance, mu = mahalanobis_distance(mu, Sigma, x)
+        # print("Mahalanobis Distance:", distance, " point=", x, "from mu=", mu)
     # means =
 
 
@@ -222,11 +211,12 @@ folder_path = "purple"
 
 
 if __name__ == "__main__":
-    stats = extract_all(folder_path, extend_data=False)
+
+    green_mean_ab = [(-27, 13),(-23, 14), (-25,9), (-31, 10), (-23,11), (-30,8), (-29,27),(-19,22),(-30,16),(-32,34),(-21,26),(-18,27),(-27,17),(-29,30),(-23,20),(-24,29),(-24,23),(-23,30),(-16,28),(-22,16),(-23,29),(-33,18),(-26,4),(-28,21),(-41,27)]
 
     # Create figure and axis
     fig, ax = plt.subplots()
-    plot_stats(stats, ax, plot_cov=False, plot_summary=True)
+    plot_stats(green_mean_ab, ax, plot_summary=True)
 
     ax.grid()
     plt.tight_layout()
