@@ -66,7 +66,7 @@ def confidence_ellipse(x, y, ax, n_std=2.0, plot_axes=False, **kwargs):
         ax.plot([center[0], center[0] + major[0]], [center[1], center[1] + major[1]], 'k-')
         ax.plot([center[0], center[0] + minor[0]], [center[1], center[1] + minor[1]], 'k-')
 
-        print(center, major)
+        # print(center, major)
 
         if lambda_[0] < lambda_[1]:
             v[:, 0], v[:, 1] = v[:, 1], v[:, 0]
@@ -79,7 +79,7 @@ def confidence_ellipse(x, y, ax, n_std=2.0, plot_axes=False, **kwargs):
         max_dist = n_std * lambda_[1]
         ax.plot([p1[0], p2[0]], [p1[1], p2[1]], '--')
 
-        print("Points for detector: ", p1, p2, "Distance=", max_dist)
+        print("Reference line: ", np.array((p1, p2), dtype=np.int32).tolist(), "Distance=", max_dist)
         # Add the circle to the axes
         circle = Circle(p1,  max_dist, color='blue', fill=False)  # Center at (0.5, 0.5), radius 0.1
         ax.add_patch(circle)
@@ -108,14 +108,14 @@ def combine_gaussians(means, covariances, weights):
     return result
 
 
-def plot_stats(stats, ax, plot_data=False, plot_cov=False, plot_var=False, plot_summary=False):
+def plot_stats(stats, ax, plot_data=False, plot_cov=False, plot_var=False, plot_summary=False, color='k'):
 
 
     for a_mean, b_mean, covariance_matrix, a_std, b_std, a_flat, b_flat in stats:
         if plot_data:
             ax.plot(a_flat, b_flat, '.')
 
-        ax.plot(a_mean, b_mean, 'o')
+        ax.plot(a_mean, b_mean, '.', color=color)
 
         if plot_cov:
             confidence_ellipse(a_flat, b_flat, ax, n_std=2)
@@ -194,16 +194,13 @@ def extract_all(folder_path, extend_data=False):
             if extend_data:
                 n = len(a_flat)
                 n2 = n // 2
+
+                # Upper side
                 stats = compute_gaussian2d(a_flat[:n2], b_flat[:n2])
                 all_hist.append(stats)
 
-                # stats = compute_gaussian2d(-a_flat[n2:], b_flat[n2:])
-                # all_hist.append(stats)
-
-                stats = compute_gaussian2d(a_flat[-n2:], b_flat[:n2])
-                all_hist.append(stats)
-                #
-                stats = compute_gaussian2d(a_flat[:n2], b_flat[-n2:])
+                # Lower side
+                stats = compute_gaussian2d(a_flat[n2:], b_flat[n2:])
                 all_hist.append(stats)
 
 

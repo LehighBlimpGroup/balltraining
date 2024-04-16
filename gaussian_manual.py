@@ -66,7 +66,7 @@ def confidence_ellipse(x, y, ax, n_std=2.0, plot_axes=False, **kwargs):
         ax.plot([center[0], center[0] + major[0]], [center[1], center[1] + major[1]], 'k-')
         ax.plot([center[0], center[0] + minor[0]], [center[1], center[1] + minor[1]], 'k-')
 
-        print(center, major)
+        # print(center, major)
 
         if lambda_[0] < lambda_[1]:
             v[:, 0], v[:, 1] = v[:, 1], v[:, 0]
