@@ -11,7 +11,7 @@ ALL_MEANS = True
 EXTEND_DATA = True
 
 if __name__ == "__main__":
-    colors = [("purple", 'b'), ("green_w_filter", 'g')]
+    colors = [("purple_w_filter", 'b'), ("green_w_filter", 'g'), ("blue_w_filter", 'r')]
 
     # Create figure and axis
     fig, ax = plt.subplots()

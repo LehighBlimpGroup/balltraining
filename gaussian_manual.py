@@ -73,7 +73,7 @@ def confidence_ellipse(x, y, ax, n_std=2.0, plot_axes=False, **kwargs):
             lambda_[0], lambda_[1] = lambda_[1], lambda_[0]
 
 
-        major2 = v[:, 0] * n_std * (0.9*lambda_[0]- lambda_[1])
+        major2 = v[:, 0] * n_std * (0.8*lambda_[0]- lambda_[1])
         p1 = center + major2
         p2 = center - major2
         max_dist = n_std * lambda_[1]
