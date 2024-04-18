@@ -7,6 +7,8 @@ from matplotlib.patches import Ellipse, Circle
 
 import matplotlib.transforms as transforms
 
+from gaussianCov import mahalanobis_distance
+
 
 def compute_gaussian2d(a_flat, b_flat):
     # Compute covariance matrix
@@ -133,13 +135,21 @@ def plot_stats(points, ax, plot_summary=False,edgecolor='k'):
         # # Mahalanobis Distance
         # distance, mu = mahalanobis_distance(mu, Sigma, x)
         # print("Mahalanobis Distance:", distance, " point=", x, "from mu=", mu)
+
+        # Point
+        x = np.array([.5, -4])
+        mu = np.array([np.average(a_means), np.average(b_means)])
+        Sigma = np.cov(a_means, b_means)
+
+        # Mahalanobis Distance
+        distance, mu = mahalanobis_distance(mu, Sigma, x)
+        print("Mahalanobis Distance:", distance, " point=", x, "from mu=", mu)
+
+
     # means =
 
 
-def mahalanobis_distance(mu, Sigma, x):
-    Sigma_inv = np.linalg.inv(Sigma)
-    distance = np.sqrt((x - mu).T @ Sigma_inv @ (x - mu))
-    return distance, mu
+
 
 
 import os

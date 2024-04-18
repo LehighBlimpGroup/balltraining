@@ -149,6 +149,7 @@ def plot_stats(stats, ax, plot_data=False, plot_cov=False, plot_var=False, plot_
 
 def mahalanobis_distance(mu, Sigma, x):
     Sigma_inv = np.linalg.inv(Sigma)
+    print("mean", mu.tolist(), "Inverted Covariance ", Sigma_inv.tolist())
     distance = np.sqrt((x - mu).T @ Sigma_inv @ (x - mu))
     return distance, mu
 
