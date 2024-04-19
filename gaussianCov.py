@@ -80,11 +80,11 @@ def confidence_ellipse(x, y, ax, n_std=2.0, plot_axes=False, **kwargs):
         ax.plot([p1[0], p2[0]], [p1[1], p2[1]], '--')
 
         print("Reference line: ", np.array((p1, p2), dtype=np.int32).tolist(), "Distance=", max_dist)
-        # Add the circle to the axes
-        circle = Circle(p1,  max_dist, color='blue', fill=False)  # Center at (0.5, 0.5), radius 0.1
-        ax.add_patch(circle)
-        circle = Circle(p2, max_dist, color='blue', fill=False)  # Center at (0.5, 0.5), radius 0.1
-        ax.add_patch(circle)
+        # # Add the circle to the axes
+        # circle = Circle(p1,  max_dist, color='blue', fill=False)  # Center at (0.5, 0.5), radius 0.1
+        # ax.add_patch(circle)
+        # circle = Circle(p2, max_dist, color='blue', fill=False)  # Center at (0.5, 0.5), radius 0.1
+        # ax.add_patch(circle)
 
     return ax.add_patch(ellipse)
 
@@ -143,13 +143,13 @@ def plot_stats(stats, ax, plot_data=False, plot_cov=False, plot_var=False, plot_
 
         # Mahalanobis Distance
         distance, mu = mahalanobis_distance(mu, Sigma, x)
-        print("Mahalanobis Distance:", distance, " point=", x, "from mu=", mu)
+        # print("Mahalanobis Distance:", distance, " point=", x, "from mu=", mu)
     # means =
 
 
 def mahalanobis_distance(mu, Sigma, x):
     Sigma_inv = np.linalg.inv(Sigma)
-    print("mean", mu.tolist(), "Inverted Covariance ", Sigma_inv.tolist())
+    print("mean and Inverted Covariance: ", mu.tolist(),", ", Sigma_inv.tolist())
     distance = np.sqrt((x - mu).T @ Sigma_inv @ (x - mu))
     return distance, mu
 
@@ -176,43 +176,64 @@ def extract_all(folder_path, extend_data=False):
             # Convert from BGR to LAB color space
             lab_image = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
 
-            # Split the LAB image into its channels
-            l_channel, a_channel, b_channel = cv2.split(lab_image)
-
-            # Flatten the channels to 1D arrays for covariance calculation
-            a_flat = np.array(a_channel.flatten(), dtype=np.float32)
-            b_flat = np.array(b_channel.flatten(), dtype=np.float32)
-
-            a_flat = 100 * (a_flat - 128) / 256
-            b_flat = 100 * (b_flat - 128) / 256
-
-            #
-
-            stats = compute_gaussian2d(a_flat, b_flat)
-            all_hist.append(stats)
-
-            # Compute stats
             if extend_data:
-                n = len(a_flat)
-                n2 = n // 2
+                images = divide_image(lab_image, 3)
+            else:
+                images = [lab_image]
 
-                # Upper side
-                stats = compute_gaussian2d(a_flat[:n2], b_flat[:n2])
+            for lab_image in images:
+                # Split the LAB image into its channels
+                l_channel, a_channel, b_channel = cv2.split(lab_image)
+
+                # Flatten the channels to 1D arrays for covariance calculation
+                a_flat = np.array(a_channel.flatten(), dtype=np.float32)
+                b_flat = np.array(b_channel.flatten(), dtype=np.float32)
+
+                a_flat = 100 * (a_flat - 128) / 256
+                b_flat = 100 * (b_flat - 128) / 256
+
+                #
+                stats = compute_gaussian2d(a_flat, b_flat)
                 all_hist.append(stats)
-
-                # Lower side
-                stats = compute_gaussian2d(a_flat[n2:], b_flat[n2:])
-                all_hist.append(stats)
-
-
-
-
 
     except FileNotFoundError:
         print("The directory does not exist.")
 
-
     return all_hist
+
+
+def divide_image(image, n):
+    # Get image dimensions
+    img_height, img_width = image.shape[:2]
+
+    # Calculate the size of each block
+    block_height = img_height // n
+    block_width = img_width // n
+
+    # Initialize a list to hold the blocks
+    blocks = []
+
+    # Divide the image into n x n blocks
+    for i in range(n):
+        for j in range(n):
+            # Calculate block coordinates
+            y_start = i * block_height
+            y_end = y_start + block_height
+            x_start = j * block_width
+            x_end = x_start + block_width
+
+            # Handle boundary cases for the last blocks on the right/bottom edge
+            if i == n-1:
+                y_end = img_height
+            if j == n-1:
+                x_end = img_width
+
+            # Extract the block and store it in the list
+            block = image[y_start:y_end, x_start:x_end]
+            blocks.append(block)
+
+    return blocks
+
 
 # Specify the path to your folder
 folder_path = "purple"
@@ -220,7 +241,7 @@ folder_path = "purple"
 
 
 if __name__ == "__main__":
-    stats = extract_all(folder_path, extend_data=False)
+    stats = extract_all(folder_path, extend_data=True)
 
     # Create figure and axis
     fig, ax = plt.subplots()

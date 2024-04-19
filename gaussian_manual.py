@@ -81,12 +81,12 @@ def confidence_ellipse(x, y, ax, n_std=2.0, plot_axes=False, **kwargs):
         max_dist = n_std * lambda_[1]
         ax.plot([p1[0], p2[0]], [p1[1], p2[1]], '--')
 
-        print("Reference line: ", np.array((p1, p2), dtype=np.int32).tolist(), "Distance=", max_dist)
-        # Add the circle to the axes
-        circle = Circle(p1,  max_dist, color='blue', fill=False)  # Center at (0.5, 0.5), radius 0.1
-        ax.add_patch(circle)
-        circle = Circle(p2, max_dist, color='blue', fill=False)  # Center at (0.5, 0.5), radius 0.1
-        ax.add_patch(circle)
+        # print("Reference line: ", np.array((p1, p2), dtype=np.int32).tolist(), "Distance=", max_dist)
+        # # Add the circle to the axes
+        # circle = Circle(p1,  max_dist, color='blue', fill=False)  # Center at (0.5, 0.5), radius 0.1
+        # ax.add_patch(circle)
+        # circle = Circle(p2, max_dist, color='blue', fill=False)  # Center at (0.5, 0.5), radius 0.1
+        # ax.add_patch(circle)
 
     return ax.add_patch(ellipse)
 
@@ -143,7 +143,7 @@ def plot_stats(points, ax, plot_summary=False,edgecolor='k'):
 
         # Mahalanobis Distance
         distance, mu = mahalanobis_distance(mu, Sigma, x)
-        print("Mahalanobis Distance:", distance, " point=", x, "from mu=", mu)
+        # print("Mahalanobis Distance:", distance, " point=", x, "from mu=", mu)
 
 
     # means =
