@@ -7,6 +7,8 @@ from matplotlib.patches import Ellipse, Circle
 
 import matplotlib.transforms as transforms
 
+from gaussianCov import mahalanobis_distance
+
 
 def compute_gaussian2d(a_flat, b_flat):
     # Compute covariance matrix
@@ -73,18 +75,18 @@ def confidence_ellipse(x, y, ax, n_std=2.0, plot_axes=False, **kwargs):
             lambda_[0], lambda_[1] = lambda_[1], lambda_[0]
 
 
-        major2 = v[:, 0] * n_std * (0.9*lambda_[0]- lambda_[1])
+        major2 = v[:, 0] * n_std * (0.8*lambda_[0]- lambda_[1])
         p1 = center + major2
         p2 = center - major2
         max_dist = n_std * lambda_[1]
         ax.plot([p1[0], p2[0]], [p1[1], p2[1]], '--')
 
-        print("Reference line: ", np.array((p1, p2), dtype=np.int32).tolist(), "Distance=", max_dist)
-        # Add the circle to the axes
-        circle = Circle(p1,  max_dist, color='blue', fill=False)  # Center at (0.5, 0.5), radius 0.1
-        ax.add_patch(circle)
-        circle = Circle(p2, max_dist, color='blue', fill=False)  # Center at (0.5, 0.5), radius 0.1
-        ax.add_patch(circle)
+        # print("Reference line: ", np.array((p1, p2), dtype=np.int32).tolist(), "Distance=", max_dist)
+        # # Add the circle to the axes
+        # circle = Circle(p1,  max_dist, color='blue', fill=False)  # Center at (0.5, 0.5), radius 0.1
+        # ax.add_patch(circle)
+        # circle = Circle(p2, max_dist, color='blue', fill=False)  # Center at (0.5, 0.5), radius 0.1
+        # ax.add_patch(circle)
 
     return ax.add_patch(ellipse)
 
@@ -133,13 +135,21 @@ def plot_stats(points, ax, plot_summary=False,edgecolor='k'):
         # # Mahalanobis Distance
         # distance, mu = mahalanobis_distance(mu, Sigma, x)
         # print("Mahalanobis Distance:", distance, " point=", x, "from mu=", mu)
+
+        # Point
+        x = np.array([.5, -4])
+        mu = np.array([np.average(a_means), np.average(b_means)])
+        Sigma = np.cov(a_means, b_means)
+
+        # Mahalanobis Distance
+        distance, mu = mahalanobis_distance(mu, Sigma, x)
+        # print("Mahalanobis Distance:", distance, " point=", x, "from mu=", mu)
+
+
     # means =
 
 
-def mahalanobis_distance(mu, Sigma, x):
-    Sigma_inv = np.linalg.inv(Sigma)
-    distance = np.sqrt((x - mu).T @ Sigma_inv @ (x - mu))
-    return distance, mu
+
 
 
 import os
