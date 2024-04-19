@@ -246,6 +246,9 @@ if __name__ == "__main__":
     # Create figure and axis
     fig, ax = plt.subplots()
     plot_stats(stats, ax, plot_cov=False, plot_summary=True)
+    
+    ax.xlabel("B")
+    ax.ylabel("A")
 
     ax.grid()
     plt.tight_layout()
