@@ -15,7 +15,7 @@ def read_tuples_from_file(filename):
                 for tpl in tuples:
                     # Split each tuple by comma and convert values to integers
                     a, b = map(int, tpl.split(','))
-                    # Append the tuple to the list
+                    # Append the tuple to the list filtering values that are to close to white or black
                     if abs(a) > 5 or abs(b) > 5:
                         tuples_list.append((a, b))
     except FileNotFoundError:
@@ -25,10 +25,10 @@ def read_tuples_from_file(filename):
 
 if __name__ == "__main__":
 
-    green = read_tuples_from_file("green.txt")
-    purple = read_tuples_from_file("purple.txt")
-    blue = read_tuples_from_file("blue.txt")
-    red = read_tuples_from_file("red.txt")
+    green = read_tuples_from_file("colors/green.txt")
+    purple = read_tuples_from_file("colors/purple.txt")
+    blue = read_tuples_from_file("colors/blue.txt")
+    red = read_tuples_from_file("colors/red.txt")
 
     colors = [("purple", purple, 'm'), ("green", green, 'g'), ("blue", blue, 'b'), ("red", red, 'r')]
 

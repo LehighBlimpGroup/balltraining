@@ -1,30 +1,6 @@
-import math
-
-import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.patches import Ellipse, Circle
-
-import matplotlib.transforms as transforms
-
-from gaussianCov import mahalanobis_distance
-
-
-def compute_gaussian2d(a_flat, b_flat):
-    # Compute covariance matrix
-    a_mean = np.mean(a_flat)
-    b_mean = np.mean(b_flat)
-    covariance_matrix = np.cov(a_flat, b_flat)
-
-    a_std = np.sqrt(np.var(a_flat))
-    b_std = np.sqrt(np.var(b_flat))
-
-    return a_mean, b_mean, covariance_matrix, a_std, b_std, a_flat,b_flat
-
-
-
-
-
+from matplotlib.patches import Ellipse
 
 def confidence_ellipse(x, y, ax, n_std=2.0, plot_axes=False, **kwargs):
     """
@@ -81,60 +57,35 @@ def confidence_ellipse(x, y, ax, n_std=2.0, plot_axes=False, **kwargs):
         max_dist = n_std * lambda_[1]
         ax.plot([p1[0], p2[0]], [p1[1], p2[1]], '--')
 
-        # print("Reference line: ", np.array((p1, p2), dtype=np.int32).tolist(), "Distance=", max_dist)
-        # # Add the circle to the axes
-        # circle = Circle(p1,  max_dist, color='blue', fill=False)  # Center at (0.5, 0.5), radius 0.1
-        # ax.add_patch(circle)
-        # circle = Circle(p2, max_dist, color='blue', fill=False)  # Center at (0.5, 0.5), radius 0.1
-        # ax.add_patch(circle)
-
     return ax.add_patch(ellipse)
 
+def mahalanobis_distance(mu, Sigma, x):
+    Sigma_inv = np.linalg.inv(Sigma)
+    print("mean and Inverted Covariance: ", mu.tolist(),", ", Sigma_inv.tolist())
+    distance = np.sqrt((x - mu).T @ Sigma_inv @ (x - mu))
+    return distance, mu
 
-def combine_gaussians(means, covariances, weights):
-    result = 0
-    for i in range(len(means)):
-        mu = means[i]  # mean vector
-        Sigma = covariances[i]  # covariance matrix
-        weight = weights[i]  # weight of the Gaussian
+def compute_gaussian2d(a_flat, b_flat):
+    # Compute covariance matrix
+    a_mean = np.mean(a_flat)
+    b_mean = np.mean(b_flat)
+    covariance_matrix = np.cov(a_flat, b_flat)
 
-        # Compute the exponent term
-        exponent = -0.5 * np.dot(np.dot(mu.T, np.linalg.inv(Sigma)), mu)
+    a_std = np.sqrt(np.var(a_flat))
+    b_std = np.sqrt(np.var(b_flat))
 
-        # Compute the Gaussian PDF
-        pdf = (1 / (2 * np.pi * np.sqrt(np.linalg.det(Sigma)))) * np.exp(exponent)
-
-        # Accumulate the PDF with the corresponding weight
-        result += weight * pdf
-
-    return result
-
+    return a_mean, b_mean, covariance_matrix, a_std, b_std, a_flat,b_flat
 
 def plot_stats(points, ax, plot_summary=False,edgecolor='k'):
-
     for a_mean, b_mean in points:
         ax.plot(a_mean, b_mean, '.', color=edgecolor)
-
-
-
 
     # covariance of all means
     if plot_summary:
         a_means = [a_mean for a_mean, b_mean in points]
         b_means = [b_mean for a_mean, b_mean in points]
 
-
         confidence_ellipse(np.array(a_means), np.array(b_means), ax, n_std=2, plot_axes=True, edgecolor=edgecolor)
-
-
-        # # Point
-        # x = np.array([.5, -4])
-        # mu = np.array([np.average(a_means), np.average(b_means)])
-        # Sigma = np.cov(a_means, b_means)
-        #
-        # # Mahalanobis Distance
-        # distance, mu = mahalanobis_distance(mu, Sigma, x)
-        # print("Mahalanobis Distance:", distance, " point=", x, "from mu=", mu)
 
         # Point
         x = np.array([.5, -4])
@@ -143,77 +94,8 @@ def plot_stats(points, ax, plot_summary=False,edgecolor='k'):
 
         # Mahalanobis Distance
         distance, mu = mahalanobis_distance(mu, Sigma, x)
-        # print("Mahalanobis Distance:", distance, " point=", x, "from mu=", mu)
-
-
-    # means =
-
-
-
-
-
-import os
-
-def extract_all(folder_path, extend_data=False):
-    # all hist
-    all_hist = []
-    # List all files in the specified directory
-    try:
-        # os.listdir() returns a list of all files and directories in 'directory'
-        files = os.listdir(folder_path)
-        # print("Files in directory:", files)
-
-        for file in files[:]:
-            # Read the image
-            image = cv2.imread(folder_path + "/" + file)
-
-            if image is None:
-                print("Error: Image could not be read.")
-                return
-
-            # Convert from BGR to LAB color space
-            lab_image = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
-
-            # Split the LAB image into its channels
-            l_channel, a_channel, b_channel = cv2.split(lab_image)
-
-            # Flatten the channels to 1D arrays for covariance calculation
-            a_flat = np.array(a_channel.flatten(), dtype=np.float32)
-            b_flat = np.array(b_channel.flatten(), dtype=np.float32)
-
-            a_flat = 100 * (a_flat - 128) / 256
-            b_flat = 100 * (b_flat - 128) / 256
-
-            #
-
-            stats = compute_gaussian2d(a_flat, b_flat)
-            all_hist.append(stats)
-
-            # Compute stats
-            if extend_data:
-                n = len(a_flat)
-                n2 = n // 2
-                stats = compute_gaussian2d(a_flat[:n2], b_flat[:n2])
-                all_hist.append(stats)
-
-                # stats = compute_gaussian2d(-a_flat[n2:], b_flat[n2:])
-                # all_hist.append(stats)
-
-                stats = compute_gaussian2d(a_flat[-n2:], b_flat[:n2])
-                all_hist.append(stats)
-                #
-                stats = compute_gaussian2d(a_flat[:n2], b_flat[-n2:])
-                all_hist.append(stats)
-
-
-
-
-
-    except FileNotFoundError:
-        print("The directory does not exist.")
-
-
-    return all_hist
+    
+    return distance, mu
 
 
 
