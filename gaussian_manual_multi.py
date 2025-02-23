@@ -30,7 +30,6 @@ if __name__ == "__main__":
     blue = read_tuples_from_file("blue.txt")
     red = read_tuples_from_file("red.txt")
 
-    #colors = [("green", green_mean_ab, 'g'), ("blue", blue_mean_ab, 'b'), ("Purple", purple, 'c')]
     colors = [("purple", purple, 'm'), ("green", green, 'g'), ("blue", blue, 'b'), ("red", red, 'r')]
 
     # Create figure and axis
@@ -38,6 +37,8 @@ if __name__ == "__main__":
 
     for name, points, c in colors:
         print ("-------", name)
+        if len(points) == 0:
+            continue
         plot_stats(points, ax, plot_summary=True, edgecolor=c)
     
     plt.xlabel("B")
